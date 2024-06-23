@@ -1,0 +1,7 @@
+sqlite3
+Flask~=2.0.3
+Werkzeug==2.1.1
+
+streamlit~=1.35.0
+requests~=2.32.3
+pandas~=2.2.2
