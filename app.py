@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+
 from database import init_db, get_tasks, add_task, update_task, delete_task, get_user_by_email, add_user
 
 app = Flask(__name__)
@@ -78,9 +79,13 @@ def register_user():
 
     user = get_user_by_email(email)
     if user:
-        return jsonify({"error": "User already exists"}), 400
+        user_id, user_email = user  # Unpack the tuple
+        print(f'User already exists: {user_id}, {user_email}')
+        return jsonify({"id": user_id, "email": user_email}), 201
 
     user_id = add_user(email)
+    print("User created")
+    print(user_id, email)
     return jsonify({"id": user_id, "email": email}), 201
 
 

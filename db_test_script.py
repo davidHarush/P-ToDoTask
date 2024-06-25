@@ -1,4 +1,5 @@
 import sqlite3
+
 import pandas as pd
 
 
@@ -18,6 +19,11 @@ def check_db(db_path):
         # Display the content of the tasks table
         print("Tasks Table Content:")
         print(tasks_df)
+
+        # Fetch content of the users table
+        users_df = pd.read_sql_query("SELECT * FROM users", conn)
+        print("Users Table Content:")
+        print(users_df)
 
         conn.close()
 

@@ -1,7 +1,8 @@
-import streamlit as st
-import requests
-import pandas as pd
 from datetime import date
+
+import pandas as pd
+import requests
+import streamlit as st
 
 API_URL = "http://127.0.0.1:5000"
 
@@ -53,9 +54,11 @@ def authenticate_user(email):
 st.set_page_config(page_title="Task Management Dashboard", layout="wide")
 
 st.sidebar.header("User Authentication")
-email = st.sidebar.text_input("Enter your email", value="", placeholder="your-email@example.com")
+with st.sidebar.form(key='login_form'):
+    email = st.text_input("Enter your email", value="", placeholder="your-email@example.com")
+    login_button = st.form_submit_button(label="Login")
 
-if st.sidebar.button("Login"):
+if login_button:
     if email:
         user = authenticate_user(email)
         if user:
