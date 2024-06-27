@@ -1,5 +1,4 @@
 from datetime import date
-
 import pandas as pd
 import requests
 import streamlit as st
@@ -53,22 +52,30 @@ def authenticate_user(email):
 
 st.set_page_config(page_title="Task Management Dashboard", layout="wide")
 
-st.sidebar.header("User Authentication")
-with st.sidebar.form(key='login_form'):
-    email = st.text_input("Enter your email", value="", placeholder="your-email@example.com")
-    login_button = st.form_submit_button(label="Login")
+if 'user' not in st.session_state:
+    with st.sidebar.form(key='login_form'):
+        email = st.text_input("Enter your email", value="", placeholder="your-email@example.com")
+        login_button = st.form_submit_button(label="Login")
 
-if login_button:
-    if email:
-        user = authenticate_user(email)
-        if user:
-            st.session_state.user = user
-            st.sidebar.success(f"Logged in as {email}")
-    else:
-        st.sidebar.error("Please enter your email")
+    if login_button:
+        if email:
+            user = authenticate_user(email)
+            if user:
+                st.session_state.user = user
+                st.sidebar.success(f"Logged in as {email}")
+                st.experimental_rerun()  # רענון אחרי התחברות
+        else:
+            st.sidebar.error("Please enter your email")
+else:
+    st.sidebar.success(f"Logged in as {st.session_state.user['email']}")
+    logout_button = st.sidebar.button(label="Logout")
+
+    if logout_button:
+        for key in st.session_state.keys():
+            del st.session_state[key]
+        st.experimental_rerun()
 
 if 'user' in st.session_state:
-    st.title(f"Task Management Dashboard for {st.session_state.user['email']}")
 
     headers = {'X-User-Email': st.session_state.user['email']}
     tasks = fetch_tasks(headers=headers)
@@ -85,7 +92,6 @@ if 'user' in st.session_state:
             add_task(
                 {"title": task_title, "completed": False, "description": "", "due_date": task_due_date.isoformat()},
                 headers=headers)
-            st.sidebar.success("Task added successfully!")
             st.experimental_rerun()
 
         # Sidebar for statistics
@@ -116,7 +122,7 @@ if 'user' in st.session_state:
                 st.write(row["Completed"])
             with col4:
                 due_date = pd.to_datetime(row.get("due_date"))
-                if due_date < pd.Timestamp(date.today()):
+                if not row["completed"] and due_date < pd.Timestamp(date.today()):
                     st.markdown(f"<span style='color:red;'>{due_date.date()}</span>", unsafe_allow_html=True)
                 else:
                     st.write(due_date.date())
@@ -147,7 +153,6 @@ if 'user' in st.session_state:
         if update_task_button:
             update_task(selected_task_id, {"title": new_title, "description": new_description, "completed": completed,
                                            "due_date": new_due_date.isoformat()}, headers=headers)
-            st.sidebar.success("Task updated successfully!")
             del st.session_state.selected_task
             del st.session_state.selected_task_id
             st.experimental_rerun()
@@ -157,7 +162,6 @@ if 'user' in st.session_state:
 
         if delete_task_button:
             delete_task(selected_task_id, headers=headers)
-            st.sidebar.success("Task deleted successfully!")
             del st.session_state.selected_task
             del st.session_state.selected_task_id
             st.experimental_rerun()

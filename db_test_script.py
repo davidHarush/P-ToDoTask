@@ -1,6 +1,6 @@
 import sqlite3
-
 import pandas as pd
+import consts
 
 
 def check_db(db_path):
@@ -32,8 +32,5 @@ def check_db(db_path):
 
 
 if __name__ == "__main__":
-    # Path to your SQLite database file
-    db_path = 'tasks.db'
-
-    # Check the content of the database
+    db_path = consts.DATABASE
     check_db(db_path)

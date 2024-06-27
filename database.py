@@ -1,14 +1,13 @@
 import sqlite3
 from sqlite3 import Error
-
-DATABASE = 'tasks.db'
+import consts
 
 
 def create_connection():
     """ create a database connection to the SQLite database """
     conn = None
     try:
-        conn = sqlite3.connect(DATABASE)
+        conn = sqlite3.connect(consts.DATABASE)
     except Error as e:
         print(e)
     return conn
