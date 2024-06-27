@@ -78,3 +78,8 @@ Run the Streamlit application:
 ```bash
 streamlit run dashboard.py
 ```
+
+
+
+![Task Management App](media/Screenshot%202024-06-27%20at%2021.59.18.png)
+
