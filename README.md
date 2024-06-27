@@ -18,6 +18,7 @@ This project is a task management application built with Flask for the backend a
 - Streamlit
 - Pandas
 - Requests
+- Sqlalchemy
 
 ## Architecture
 
@@ -33,7 +34,6 @@ The project is divided into two main parts:
    - Provides a user-friendly interface for managing tasks.
    - Interacts with the backend through HTTP requests.
 
-This is my first Python project, and it was a great learning experience to build a full-stack application from scratch.
 
 ## Setup Instructions
 
