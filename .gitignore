@@ -127,11 +127,5 @@ dmypy.json
 .pyre/
 
 
-
-
-# Flask stuff:
-instance/
-.webassets-cache
-
 # SQLite database file
 test.db
