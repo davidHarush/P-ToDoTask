@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify
-
-from database import init_db, get_tasks, add_task, update_task, delete_task, get_user_by_email, add_user
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from database_sqlalchemy import db, User, Task
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./test.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-init_db()
+db.init_app(app)
+migrate = Migrate(app, db)
 
 
 @app.route('/tasks', methods=['GET'])
@@ -13,30 +17,44 @@ def fetch_tasks():
     if not user_email:
         return jsonify({"error": "User email is required"}), 400
 
-    user = get_user_by_email(user_email)
+    user = User.query.filter_by(email=user_email).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    tasks = get_tasks(user[0])
-    return jsonify(tasks)
+    tasks = Task.query.filter_by(user_id=user.id).all()
+    return jsonify([task.to_dict() for task in tasks])
 
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
-    user_email = request.headers.get('X-User-Email')
-    if not user_email:
-        return jsonify({"error": "User email is required"}), 400
+    try:
+        user_email = request.headers.get('X-User-Email')
+        if not user_email:
+            return jsonify({'error': 'User email is required'}), 400
 
-    user = get_user_by_email(user_email)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+        user = User.query.filter_by(email=user_email).first()
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
 
-    task = request.json
-    if not task or 'title' not in task:
-        return jsonify({"error": "Task title is required"}), 400
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Invalid input'}), 400
 
-    task_id = add_task(task, user[0])
-    return jsonify({"id": task_id, **task}), 201
+        title = data.get('title')
+        if not title:
+            return jsonify({'error': 'Title is required'}), 400
+
+        description = data.get('description')
+        completed = data.get('completed', False)
+        due_date = data.get('due_date')
+
+        new_task = Task(title=title, description=description, completed=completed, due_date=due_date, user_id=user.id)
+        db.session.add(new_task)
+        db.session.commit()
+
+        return jsonify({'message': 'Task created successfully'}), 201
+    except Exception as e:
+        return jsonify({'error': f'Error creating task: {e}'}), 500
 
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
@@ -45,16 +63,25 @@ def modify_task(task_id):
     if not user_email:
         return jsonify({"error": "User email is required"}), 400
 
-    user = get_user_by_email(user_email)
+    user = User.query.filter_by(email=user_email).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    task = request.json
-    if not task or 'title' not in task:
+    task_data = request.json
+    if not task_data or 'title' not in task_data:
         return jsonify({"error": "Task title is required"}), 400
 
-    update_task(task_id, task, user[0])
-    return jsonify(task)
+    task = Task.query.filter_by(id=task_id, user_id=user.id).first()
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+
+    task.title = task_data['title']
+    task.description = task_data.get('description', task.description)
+    task.completed = task_data.get('completed', task.completed)
+    task.due_date = task_data.get('due_date', task.due_date)
+
+    db.session.commit()
+    return jsonify(task.to_dict())
 
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
@@ -63,11 +90,16 @@ def remove_task(task_id):
     if not user_email:
         return jsonify({"error": "User email is required"}), 400
 
-    user = get_user_by_email(user_email)
+    user = User.query.filter_by(email=user_email).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    delete_task(task_id, user[0])
+    task = Task.query.filter_by(id=task_id, user_id=user.id).first()
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+
+    db.session.delete(task)
+    db.session.commit()
     return '', 204
 
 
@@ -77,16 +109,14 @@ def register_user():
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
-    user = get_user_by_email(email)
+    user = User.query.filter_by(email=email).first()
     if user:
-        user_id, user_email = user  # Unpack the tuple
-        print(f'User already exists: {user_id}, {user_email}')
-        return jsonify({"id": user_id, "email": user_email}), 201
+        return jsonify(user.to_dict()), 201
 
-    user_id = add_user(email)
-    print("User created")
-    print(user_id, email)
-    return jsonify({"id": user_id, "email": email}), 201
+    new_user = User(email=email)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(new_user.to_dict()), 201
 
 
 if __name__ == '__main__':
