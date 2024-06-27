@@ -119,5 +119,10 @@ def register_user():
     return jsonify(new_user.to_dict()), 201
 
 
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({"message": "API is working"}), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
