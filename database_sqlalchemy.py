@@ -21,7 +21,7 @@ class Task(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     completed = db.Column(db.Boolean, default=False)
-    due_date = db.Column(db.String)  # שינינו למחרוזת
+    due_date = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def to_dict(self):

@@ -63,7 +63,7 @@ if 'user' not in st.session_state:
             if user:
                 st.session_state.user = user
                 st.sidebar.success(f"Logged in as {email}")
-                st.experimental_rerun()  # רענון אחרי התחברות
+                st.experimental_rerun()
         else:
             st.sidebar.error("Please enter your email")
 else:
