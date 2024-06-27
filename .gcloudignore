@@ -1,0 +1,16 @@
+# .gcloudignore
+# This file specifies files that are *not* uploaded to Google Cloud Platform
+# using gcloud.
+
+# Ignore the following directories:
+node_modules/
+bower_components/
+.env/
+.venv/
+__pycache__/
+
+# Ignore the following files:
+*.pyc
+*.pyo
+*.pyd
+.Python
