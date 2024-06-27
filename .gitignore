@@ -125,3 +125,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# SQLite database file
+test.db
