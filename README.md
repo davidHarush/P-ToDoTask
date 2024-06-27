@@ -1,3 +1,4 @@
+
 # Task Management Application
 
 This project is a task management application built with Flask for the backend and Streamlit for the frontend. The application allows users to manage their tasks with features like adding, updating, and deleting tasks. User authentication is handled via email-based registration.
@@ -41,20 +42,39 @@ This is my first Python project, and it was a great learning experience to build
 - Python 3.x
 - pip (Python package installer)
 
-
-
-Clone the repository:
+### Clone the repository:
 
 ```bash
 git clone https://github.com/your-username/task-management-app.git
-cd task-management-app
 ```
 
+### Setting up the Python environment
 
+Create a virtual environment:
+```bash
+python3 -m venv venv
+```
 
-Run the Flask server and the Streamlit app:
+Activate the virtual environment:
+```bash
+source venv/bin/activate
+```
+
+### Installing the required packages
+
+Install the required packages:
+```bash
+pip install -r requirements.txt
+```
+
+### Running the application
+
+Run the Flask server:
 ```bash
 python app.py
-streamlit run dashboard.py
 ```
 
+Run the Streamlit application:
+```bash
+streamlit run dashboard.py
+```
