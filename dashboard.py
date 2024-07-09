@@ -6,7 +6,7 @@ import streamlit as st
 API_URL = "http://127.0.0.1:5000"
 # API_URL = "https://p-todotask.df.r.appspot.com"
 
-
+# fetch_tasks function fetches all tasks from the API
 def fetch_tasks(headers):
     try:
         response = requests.get(f"{API_URL}/tasks", headers=headers)
@@ -17,6 +17,7 @@ def fetch_tasks(headers):
         return []
 
 
+# add_task function adds a new task to the API
 def add_task(task, headers):
     try:
         response = requests.post(f"{API_URL}/tasks", json=task, headers=headers)
@@ -25,6 +26,7 @@ def add_task(task, headers):
         st.error(f"Error adding task: {e}")
 
 
+# update_task function updates a task in the API
 def update_task(task_id, task, headers):
     try:
         response = requests.put(f"{API_URL}/tasks/{task_id}", json=task, headers=headers)
@@ -33,6 +35,7 @@ def update_task(task_id, task, headers):
         st.error(f"Error updating task: {e}")
 
 
+# delete_task function deletes a task from the API
 def delete_task(task_id, headers):
     try:
         response = requests.delete(f"{API_URL}/tasks/{task_id}", headers=headers)
@@ -41,6 +44,7 @@ def delete_task(task_id, headers):
         st.error(f"Error deleting task: {e}")
 
 
+# authenticate_user function authenticates a user using the API
 def authenticate_user(email):
     try:
         response = requests.post(f"{API_URL}/register", json={"email": email})

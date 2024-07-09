@@ -11,6 +11,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 
+#  Fetches all tasks associated with the user.
 @app.route('/tasks', methods=['GET'])
 def fetch_tasks():
     user_email = request.headers.get('X-User-Email')
@@ -25,6 +26,10 @@ def fetch_tasks():
     return jsonify([task.to_dict() for task in tasks])
 
 
+#  Creates a new task for the user.
+#  It requires the user email in the request headers and task details in the request body.
+#  The task is associated with the user based on the email provided. If the user does not exist,
+#  an error response is returned. If the task is created successfully, a success response is returned.
 @app.route('/tasks', methods=['POST'])
 def create_task():
     try:
@@ -57,6 +62,7 @@ def create_task():
         return jsonify({'error': f'Error creating task: {e}'}), 500
 
 
+# Modify a single task based on the task_id provided in the URL.
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 def modify_task(task_id):
     user_email = request.headers.get('X-User-Email')
@@ -84,6 +90,7 @@ def modify_task(task_id):
     return jsonify(task.to_dict())
 
 
+# Removes a single task based on the task_id provided in the URL.
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 def remove_task(task_id):
     user_email = request.headers.get('X-User-Email')
@@ -103,6 +110,7 @@ def remove_task(task_id):
     return '', 204
 
 
+# Register a new user with the provided email.
 @app.route('/register', methods=['POST'])
 def register_user():
     email = request.json.get('email')
@@ -119,6 +127,7 @@ def register_user():
     return jsonify(new_user.to_dict()), 201
 
 
+# Test endpoint to check if the API is working.
 @app.route('/test', methods=['GET'])
 def test():
     return jsonify({"message": "API is working"}), 200
