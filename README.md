@@ -67,6 +67,18 @@ Install the required packages:
 pip install -r requirements.txt
 ```
 
+### Init SQLAlchemy
+
+```bash
+flask db init
+```
+```bash
+flask db migrate -m "Initial migration."
+```
+```bash
+flask db upgrade
+```
+
 ### Running the application
 
 Run the Flask server:
@@ -78,7 +90,6 @@ Run the Streamlit application:
 ```bash
 streamlit run dashboard.py
 ```
-
 
 
 ![Task Management App](media/Screenshot%202024-06-27%20at%2021.59.18.png)
